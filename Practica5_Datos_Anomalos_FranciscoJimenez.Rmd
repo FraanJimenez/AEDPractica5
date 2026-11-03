@@ -159,7 +159,21 @@ Por tanto, el proceso se ha realizado correctamente.
   * Emplea después la función `na.omit` para quedarnos solo con las filas con datos completos en un nuevo data frame `clean_iris`.
 
 ```{r Solucion ejercicio 3, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+# Veamos las observaciones completas (sin NA)
+n_completas <- sum(complete.cases(dirty_iris))
 
+# Porcentaje de observaciones completas
+porcentaje_completas <- 100 * n_completas / nrow(dirty_iris)
+
+cat("Observamos que hay:", n_completas, "observaciones completas\n")
+cat("El porcentaje de observaciones completas es:", round(porcentaje_completas, 2), "%\n")
+
+# Creemos el conjunto sin valores NA (con na.omit)
+clean_iris <- na.omit(dirty_iris)
+
+# Comprobemos si lo hemos creado bien (deberían quedar 92 filas de 150 que había)
+cat("\nDimensiones originales:", nrow(dirty_iris), "\n")
+cat("Dimensiones quitando valores NA:", nrow(clean_iris))
 ```
 
 # Detección de outliers univariante
