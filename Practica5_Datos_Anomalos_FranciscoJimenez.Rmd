@@ -295,18 +295,11 @@ Nota: podría extenderse la aplicación a todas las variables numéricas usando 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 library(dplyr)
 
+# Identificamos los  outliers con las funciones del ejercicio 5 usando mutate
 dirty_iris <- dirty_iris %>% mutate(sigma_outlier = seq_along(Petal.Length) %in% reglasigma(Petal.Length),
                              hampel_outlier = seq_along(Petal.Length) %in% reglahampel(Petal.Length),
                              boxplot_outlier = seq_along(Petal.Length) %in% reglaboxplot(Petal.Length),
                              percentil_outlier = seq_along(Petal.Length) %in% reglapercentil(Petal.Length))
-dirty_iris$Petal.Length
-
-
-cat("Sigma:", sum(dirty_iris$sigma_outlier, na.rm = TRUE), "\n")
-cat("Hampel:", sum(dirty_iris$hampel_outlier, na.rm = TRUE), "\n")
-cat("Boxplot:", sum(dirty_iris$boxplot_outlier, na.rm = TRUE), "\n")
-cat("Percentil:", sum(dirty_iris$percentil_outlier, na.rm = TRUE), "\n")
-
 ```
 
 ## Ejercicio 7: Comparativa de los métodos de detección de outliers
@@ -317,8 +310,34 @@ En los métodos de detección de outliers analizados, examina los resultados com
   * Los valores etiquetados como outliers (ordenados de menor a mayor).
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+# Detectamos los valores que son outliers
+out1 <- reglasigma(dirty_iris$Petal.Length)
+out2 <- reglahampel(dirty_iris$Petal.Length)
+out3 <- reglaboxplot(dirty_iris$Petal.Length)
+out4 <- reglapercentil(dirty_iris$Petal.Length)
 
+cat("El número de outliers con la regla 3 sigma es:", sum(dirty_iris$sigma_outlier, na.rm = TRUE), "\n")
+cat("El número de outliers con el identificador Hampel es:", sum(dirty_iris$hampel_outlier, na.rm = TRUE), "\n")
+cat("El número de outliers con la regla boxplot es:", sum(dirty_iris$boxplot_outlier, na.rm = TRUE), "\n")
+cat("El número de outliers con el método de los percentiles:", sum(dirty_iris$percentil_outlier, na.rm = TRUE), "\n")
+
+# Valores detectados (ordenados)
+x <- dirty_iris$Petal.Length
+
+cat("\nOutliers Sigma:\n")
+sort(x[out1])
+
+cat("\nOutliers Hampel:\n")
+sort(x[out2])
+
+cat("\nOutliers Boxplot:\n")
+sort(x[out3])
+
+cat("\nOutliers Percentil:\n")
+sort(x[out4])
 ```
+Vemos un resultado esperado, ya que el método de los percentiles es el más restrictivo, ya que elimina cualquier valor fuera de los percentiles dados, a pesar de no estar realmente "alejados" del resto (o al menos tanto como deberían)
+
 
 ## Ejercicio 8: Representación gráfica
 
