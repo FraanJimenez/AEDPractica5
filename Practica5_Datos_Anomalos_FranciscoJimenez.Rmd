@@ -194,13 +194,50 @@ Hazlo para el data frame con observaciones completas `clean_iris` (que no tiene 
   * Compara los resultados para los dos conjuntos en la variable `Petal.Length`.
 
 ```{r , include = TRUE}
+library(dplyr)
 
+# Creamos la función MADM como dice en el enunciado
+madm <- function(x) {
+  1.4826 * median(abs(x - median(x, na.rm = TRUE)), na.rm = TRUE)
+}
+
+# Estadísticos en dirty_iris
+dirty_iris %>% summarise(across(where(is.numeric),
+               list(media = ~mean(.x, na.rm = TRUE),
+                    sd = ~sd(.x, na.rm = TRUE),
+                    mediana = ~median(.x, na.rm = TRUE),
+                    MADM = ~madm(.x),
+                    IQR = ~IQR(.x, na.rm = TRUE))))
+
+# Estadísticos en clean_iris
+clean_iris %>% summarise(across(where(is.numeric),
+               list(media = ~mean(.x, na.rm = TRUE),
+                    sd = ~sd(.x, na.rm = TRUE),
+                    mediana = ~median(.x, na.rm = TRUE),
+                    MADM = ~madm(.x),
+                    IQR = ~IQR(.x, na.rm = TRUE))))
+
+# Vamos a comparar según el dataframe para la variable pedida
+cat("Media dirty_iris:", mean(dirty_iris$Petal.Length, na.rm = TRUE), "\n")
+cat("SD dirty_iris:", sd(dirty_iris$Petal.Length, na.rm = TRUE), "\n")
+cat("Mediana dirty_iris:", median(dirty_iris$Petal.Length, na.rm = TRUE), "\n")
+cat("MADM dirty_iris:", madm(dirty_iris$Petal.Length), "\n")
+cat("IQR dirty_iris:", IQR(dirty_iris$Petal.Length, na.rm = TRUE), "\n")
+
+cat("\nMedia clean_iris:", mean(clean_iris$Petal.Length, na.rm = TRUE), "\n")
+cat("SD clean_iris:", sd(clean_iris$Petal.Length, na.rm = TRUE), "\n")
+cat("Mediana clean_iris:", median(clean_iris$Petal.Length, na.rm = TRUE), "\n")
+cat("MADM clean_iris:", madm(clean_iris$Petal.Length), "\n")
+cat("IQR clean_iris:", IQR(clean_iris$Petal.Length, na.rm = TRUE))
 ```
+
+Observamos que hay estadísticos como la mediana y el MADM que no varían (o no lo hacen de manera significativa), mientras que el resto sí presentan diferencias, principalmente la desviación típica, que es la más sensible a estos cambios.
 
 
 ## Ejercicio 5: Métodos de detección de outliers
 
 Escribe una función que detecte los outliers de un vector $x$ para cada uno de los siguientes métodos de detección de outliers univariantes (todas las funciones tienen que ser robustas a la presencia de valores NA).
+
 
   * **Regla 3 sigma** `reglasigma(x)`: Considera que los datos siguen una distribución gaussiana. Datos típicos caracterizados por la media y la dispersión por la varianza. Valores por encima de 3 desviaciones típicas se consideran outliers.
 
