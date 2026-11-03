@@ -346,7 +346,24 @@ Representa gráficamente los datos de `Petal.Length` (distribución de puntos en
 Nota: usa en `geom_point` con la opción `position='jitter'` para mejorar la legibilidad del gráfico.
 
 ```{r Solucion ejercicio 8, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 
+# Creo carpeta results para añadir la gráfica
+dir.create("results", showWarnings = FALSE)
+
+
+datos_plot <- dirty_iris %>% select(Petal.Length, sigma_outlier, hampel_outlier, boxplot_outlier, percentil_outlier) %>% pivot_longer(cols = -Petal.Length, names_to = "Regla", values_to = "Outlier") %>% mutate(Tipo = ifelse(Outlier, "Outlier", "Típico"))
+
+# Gráfico
+grafico <- ggplot(datos_plot, aes(x = Regla, y = Petal.Length, color = Tipo)) + geom_point(position = position_jitter(width = 0.2), size = 2) + labs(title = "Detección de outliers en Petal.Length", x = "Regla", y = "Petal.Length")
+
+# Mostrar gráfico
+print(grafico)
+
+# Guardar gráfico
+ggsave("results/Ejercicio8_Outliers_PetalLength.pdf", plot = grafico)
 ```
 
 # Imputación de datos
