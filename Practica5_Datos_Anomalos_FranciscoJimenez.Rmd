@@ -274,7 +274,7 @@ reglaboxplot <- function(x){
   lim_inf <- x_i - 1.5*iqr
   lim_sup <- x_s + 1.5*iqr
 
-  which(x < li | x > ls)
+  which(x < lim_inf | x > lim_sup)
 }
 
 
@@ -293,8 +293,19 @@ Utiliza la función `mutate` y `across` para identificar los outliers en la vari
 Nota: podría extenderse la aplicación a todas las variables numéricas usando también `mutate`, `across` y `where`. 
 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+library(dplyr)
+
+dirty_iris <- dirty_iris %>% mutate(sigma_outlier = seq_along(Petal.Length) %in% reglasigma(Petal.Length),
+                             hampel_outlier = seq_along(Petal.Length) %in% reglahampel(Petal.Length),
+                             boxplot_outlier = seq_along(Petal.Length) %in% reglaboxplot(Petal.Length),
+                             percentil_outlier = seq_along(Petal.Length) %in% reglapercentil(Petal.Length))
+dirty_iris$Petal.Length
 
 
+cat("Sigma:", sum(dirty_iris$sigma_outlier, na.rm = TRUE), "\n")
+cat("Hampel:", sum(dirty_iris$hampel_outlier, na.rm = TRUE), "\n")
+cat("Boxplot:", sum(dirty_iris$boxplot_outlier, na.rm = TRUE), "\n")
+cat("Percentil:", sum(dirty_iris$percentil_outlier, na.rm = TRUE), "\n")
 
 ```
 
