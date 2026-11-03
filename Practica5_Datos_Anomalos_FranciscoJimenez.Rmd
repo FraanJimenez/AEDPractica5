@@ -2,15 +2,15 @@
 title: "Práctica 5. Datos Anómalos"
 subtitle: "Análisis Exploratorio de Datos, Máster en Ciencia de Datos - UV"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: no
   html_document:
     echo: yes
     number_sections: no
     theme: lumen
     toc: yes
-  pdf_document:
-    toc: yes
-    toc_depth: 3
-    number_sections: no
 ---
 
 ```{r setup, cache = F, echo = F, message = F, warning = F, tidy = F}
@@ -131,10 +131,26 @@ Reemplaza, en todas las columnas numéricas del data frame `dirty_iris`, los val
 Nota: Puedes reemplazar los valores para cada variable del dataframe usando `mutate` con la función `ifelse`.
 
 ```{r Solucion ejercicio 2, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-# DEBEMOS ELIMINAR TAMBIEN LOS VALROES IGUALES A CERO YA QUE SE TRATA DE LONGITUDES DE PARTES DE UNA FLOR. NO PUEDEN SER O
+library(dplyr)
 
+# Cambiamos los valores pedidos por NA
+dirty_iris <- dirty_iris %>% mutate(across(where(is.numeric),~ ifelse(!is.finite(.) | . <= 0, NA, .)))
 
+# Hagamos la comprobación para ver si el número de NA ha cambiado 
+sum(is.na(dirty_iris$Sepal.Length))
+sum(is.na(dirty_iris$Sepal.Width))
+sum(is.na(dirty_iris$Petal.Length))
+sum(is.na(dirty_iris$Petal.Width))
+
+# Veamos el conjunto de datos ordenado a ver si ha eliminado todo lo que toca
+sort(dirty_iris$Sepal.Length)
+sort(dirty_iris$Sepal.Width)
+sort(dirty_iris$Petal.Length)
+sort(dirty_iris$Petal.Width)
 ```
+Si visualizamos el conjunto de datos ordenado, vemos que ha eliminado en la primera el 0 y ha añadido un valor NA, en la segunda el 0 y el negativo (2 NA más), en la tercera un cero (1 NA más) y en la última ha eliminado el valor Inf, cambiándolo así por NA. 
+
+Por tanto, el proceso se ha realizado correctamente.
 
 
 ## Ejercicio 3: Valores perdidos y observaciones completas
